@@ -28,7 +28,8 @@ def showSummary():
     if club:
         return render_template('welcome.html', club=club, competitions=competitions)
     else:
-        flash("Email not found. Please try again.")
+        # Message flash pour les emails non valides
+        flash("Désolé, vous n'êtes pas un secrétaire. Veuillez réessayer.")
         return redirect(url_for('index'))
 
 @app.route('/book/<competition>/<club>')
@@ -39,7 +40,7 @@ def book(competition, club):
         return render_template('booking.html', club=foundClub, competition=foundCompetition)
     else:
         flash("Something went wrong-please try again")
-        return render_template('welcome.html', club=club, competitions=competitions)
+        return render_template('welcome.html', club=foundClub, competitions=competitions)
 
 @app.route('/purchasePlaces', methods=['POST'])
 def purchasePlaces():
