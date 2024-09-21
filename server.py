@@ -47,21 +47,22 @@ def purchasePlaces():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
-
-    # Vérification si les places demandées sont négatives
-    if placesRequired <= 0:
-        flash("Le nombre de places à réserver doit être supérieur à zéro.")
+    
+    # Vérification si le nombre de places demandées est supérieur aux points disponibles
+    if placesRequired > int(club['points']):
+        flash(f"Vous ne pouvez réserver que {club['points']} places. Veuillez ajuster votre demande.")
         return render_template('welcome.html', club=club, competitions=competitions)
-
-    # Vérification si les places demandées dépassent les places disponibles
+    
+    # Vérification si les places demandées dépassent les places disponibles pour la compétition
     if placesRequired > int(competition['numberOfPlaces']):
         flash(f"Il n'y a pas assez de places disponibles. Vous avez demandé {placesRequired} places, mais il n'en reste que {competition['numberOfPlaces']}.")
         return render_template('welcome.html', club=club, competitions=competitions)
-    else:
-        competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - placesRequired
-        flash('Réservation réussie!')
-        return render_template('welcome.html', club=club, competitions=competitions)
-
+    
+    # Si tout est valide, mise à jour des places disponibles et des points du club
+    competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - placesRequired
+    club['points'] = int(club['points']) - placesRequired
+    flash('Réservation réussie!')
+    return render_template('welcome.html', club=club, competitions=competitions)
 
 @app.route('/logout')
 def logout():
