@@ -86,6 +86,12 @@ def showPoints():
     # Récupérer la liste des clubs et leurs points pour les afficher
     return render_template('points.html', clubs=clubs)
 
+@app.route('/public-points')
+def publicPoints():
+    # Récupérer la liste des clubs et leurs points pour les afficher publiquement
+    return render_template('public_points.html', clubs=clubs)
+
+
 
 
 @app.route('/logout')
