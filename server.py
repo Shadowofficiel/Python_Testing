@@ -47,22 +47,34 @@ def purchasePlaces():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
-    
-    # Vérification si le nombre de places demandées est supérieur aux points disponibles
-    if placesRequired > int(club['points']):
-        flash(f"Vous ne pouvez réserver que {club['points']} places. Veuillez ajuster votre demande.")
+
+    # Limiter la réservation à 12 places maximum par secrétaire
+    if placesRequired > 12:
+        flash("Vous ne pouvez réserver que 12 places maximum par compétition.")
         return render_template('welcome.html', club=club, competitions=competitions)
     
+    # Vérification si les places demandées sont supérieures aux points disponibles
+    if placesRequired > int(club['points']):
+        flash(f"Vous ne pouvez réserver que {club['points']} places en fonction de vos points disponibles.")
+        return render_template('welcome.html', club=club, competitions=competitions)
+
     # Vérification si les places demandées dépassent les places disponibles pour la compétition
     if placesRequired > int(competition['numberOfPlaces']):
         flash(f"Il n'y a pas assez de places disponibles. Vous avez demandé {placesRequired} places, mais il n'en reste que {competition['numberOfPlaces']}.")
         return render_template('welcome.html', club=club, competitions=competitions)
     
-    # Si tout est valide, mise à jour des places disponibles et des points du club
+    # Mise à jour des places disponibles et des points du club
     competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - placesRequired
     club['points'] = int(club['points']) - placesRequired
-    flash('Réservation réussie!')
+    flash(f"Réservation réussie! Vous avez réservé {placesRequired} places.")
+    
+    # Vérifier si le concours est complet
+    if competition['numberOfPlaces'] == 0:
+        flash(f"Le concours {competition['name']} est maintenant complet.")
+    
     return render_template('welcome.html', club=club, competitions=competitions)
+
+
 
 @app.route('/logout')
 def logout():
