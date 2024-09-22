@@ -48,12 +48,12 @@ def purchasePlaces():
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
 
-    # Limiter la réservation à 12 places maximum par secrétaire
+    # Limiter la réservation à 12 places par compétition
     if placesRequired > 12:
         flash("Vous ne pouvez réserver que 12 places maximum par compétition.")
         return render_template('welcome.html', club=club, competitions=competitions)
     
-    # Vérification si les places demandées sont supérieures aux points disponibles
+    # Vérification si les points disponibles du club permettent de réserver 12 places
     if placesRequired > int(club['points']):
         flash(f"Vous ne pouvez réserver que {club['points']} places en fonction de vos points disponibles.")
         return render_template('welcome.html', club=club, competitions=competitions)
@@ -62,7 +62,7 @@ def purchasePlaces():
     if placesRequired > int(competition['numberOfPlaces']):
         flash(f"Il n'y a pas assez de places disponibles. Vous avez demandé {placesRequired} places, mais il n'en reste que {competition['numberOfPlaces']}.")
         return render_template('welcome.html', club=club, competitions=competitions)
-    
+
     # Mise à jour des places disponibles et des points du club
     competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - placesRequired
     club['points'] = int(club['points']) - placesRequired
@@ -73,6 +73,7 @@ def purchasePlaces():
         flash(f"Le concours {competition['name']} est maintenant complet.")
     
     return render_template('welcome.html', club=club, competitions=competitions)
+
 
 
 
